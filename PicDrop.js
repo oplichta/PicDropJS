@@ -2,9 +2,9 @@
     // there's the gallery and the trash
     var $gallery = $( "#gallery" ),
       $trash = $( "#trash" );
- 
+
     // let the gallery items be draggable
-    $( "li", $gallery ).draggable({
+     $( "li", $gallery ).draggable({
       cancel: "a.ui-icon", // clicking an icon won't initiate dragging
       revert: "invalid", // when not dropped, the item will revert back to its initial position
       containment: "document",
@@ -40,10 +40,7 @@
  
         $item.find( "a.ui-icon-trash" ).remove();
         $item.append( recycle_icon ).appendTo( $list ).fadeIn(function() {
-          $item
-            .animate({ width: "48px" })
-            .find( "img" )
-              .animate({ height: "36px" });
+          $item.animate({ width: "150px" }).find( "img" ).animate({ height: "150px" });
         });
       });
     }
@@ -58,7 +55,7 @@
           .end()
           .css( "width", "96px")
           .append( trash_icon )
-          .find( "img" )
+          .find( "li" )
             .css( "height", "72px" )
           .end()
           .appendTo( $gallery )
@@ -102,4 +99,24 @@
  
       return false;
     });
+
+     //wyszukiwanie obrazków
+ $('#guzik').click(function() { 
+var search = document.getElementById('szukaj').value; 
+  var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
+  $.getJSON( flickerAPI, {
+    tags: search,
+    tagmode: "any",
+    format: "json"
+  })
+  .done(function( data ) {
+    $.each( data.items, function( i, item ) {
+      $( "<img/>" ).attr( "src", item.media.m ).appendTo( "li" );
+      if ( i === 0 ) {
+        return false;
+      }
+    });
+  });
+})();
+
   });
