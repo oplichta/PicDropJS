@@ -1,3 +1,4 @@
+
  #gallery { float: left; width: 65%; min-height: 12em; }
   .gallery.custom-state-active { background: #eee; }
   .gallery li { float: left; width: 120px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
