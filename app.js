@@ -36,8 +36,8 @@ io.sockets.on('connection', function (socket) {
             socket.emit('search', search);            
             console.log('wyslalem '+search);
       });
-      socket.on('src', function (src){
-        socket.broadcast.emit('searchToAll',src);
+      socket.on('src', function (src , search){        
+        socket.broadcast.emit('searchToAll',src,search);
         console.log('wyslalem '+ src);
       });
       socket.on('addPhoto', function (name) {
