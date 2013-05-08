@@ -18,7 +18,7 @@ $(document).ready(function () {
 		        format: "json"
 		      }).done(function( data ){
 				  $.each( data.items, function( i, item ) {
-		          $("#gallery").append("<li>"+search+"</li>");
+		          $("#gallery").append("<li class='img-rounded'>"+search+"</li>");
 		          $("#gallery li:last-child").prev().removeClass("image");
 		          $("#gallery li:last-child").addClass("image").draggable(
 		          	{
