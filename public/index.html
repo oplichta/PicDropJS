@@ -5,19 +5,21 @@
 	<title>PicDrop</title>
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />	
 	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link rel="stylesheet" href="/css/bootstrap-responsive.min.css" />
+	<link rel="stylesheet" href="/css/style.css" />
 	<script src="/js/jquery.min.js"></script>
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script src="js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="/css/style.css" />
+	
 	<script src="/js/skrypt.js"></script>
-	<link rel="stylesheet" href="/css/PicDrop.css" />	
+	<!-- <link rel="stylesheet" href="/css/PicDrop.css" />	 -->
 	</head>
 
 	<body> 
 		 <form action="#">
-   			 <input type="text" name="name" id="szukaj"></input>
+   			 <input type="text" name="name" id="szukaj" data-provide="typeahead"></input>
              <p>
               <input type='button' value='ok' id='guzik' class="btn btn-primary"></input>
              </p>
@@ -27,23 +29,11 @@
 		 <ul id="gallery"  class="gallery">
  			
   		</ul>
-  		<div id="table" class="container" >
+  		<div id="Board" >
     		<h4>Table</h4>
   		</div>
 
-  		<div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span2">
-      <!--Sidebar content-->
-      cos
-    </div>
-    <div class="span10">
-      <!--Body content-->
-      cos innego
-    </div>
-  </div>
-</div>
-					
+  							
 			
 		</div>
 	</body>

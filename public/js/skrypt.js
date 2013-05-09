@@ -3,7 +3,8 @@
 $(document).ready(function () {
 	 'use strict';
 		var socket = io.connect('http://localhost:3000');
-		
+		var fotka ="";
+		var zrodlo ="";
 			
 			$('#guzik').click(function(){
 			var name =  document.getElementById('szukaj').value;
@@ -29,9 +30,16 @@ $(document).ready(function () {
 						$('#posX').text('x: ' + xPos);
            				$('#posY').text('y: ' + yPos);
 						socket.emit('movePhoto',   xPos,yPos);						
-					}
-					});
-		          socket.emit('src',item.media.m,search);
+					},
+					 stop: function(){
+			            var finalOffset = $(this).offset();
+			            var finalxPos = finalOffset.left;
+			            var finalyPos = finalOffset.top;
+			        }
+					 	});
+		          fotka = item.media.m;
+		          zrodlo = search;
+		         // socket.emit('src',item.media.m,search);
 		          $( "<img/>" ).attr( "src", item.media.m ).appendTo('.image');
 		          	if ( i === 0 ) {
 		          	  return false;
@@ -39,11 +47,39 @@ $(document).ready(function () {
 	        	});
          	});
 			});
+			
 		});
+		// socket.on('showBoardToAll',function (src,search){
+				$('#Board').droppable(
+				{
+		        //accept: '#gallery',
+		        // activeClass: "ui-state-hover",
+		        // hoverClass: "ui-state-active",
+
+			        over : function(){
+			           $(this).animate({'border-width' : '5px',
+			                             'border-color' : '#0f0'
+			                            }, 500);
+			            //$('#gallery').draggable('option','containment',$(this));
+			           
+			        },
+
+			        drop: function( event, ui ) {
+				        $('#Board').html( "Dropped!");
+				        socket.emit('src',fotka,zrodlo);
+				        $('#Board').html(fotka);
+				        $('#Board').html("search "+zrodlo);
+				    }
+
+		    	 });
+
+
+
+		// });
 		socket.on('searchToAll',function (src,search){
-			$("#gallery").append("<li>"+search+"</li>");
-		          $("#gallery li:last-child").prev().removeClass("image");
-		          $("#gallery li:last-child").addClass("image").draggable(
+			$("#Board").append("<li>"+search+"</li>");
+		          $("#Board li:last-child").prev().removeClass("image");
+		          $("#Board li:last-child").addClass("image").draggable(
 		          	{
 					drag: function(){
 						var offset = $(this).offset();
