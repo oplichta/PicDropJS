@@ -3,50 +3,69 @@
 $(document).ready(function () {
 	 'use strict';
 		var socket = io.connect('http://localhost:3000');
-		var fotka ="";
-		var zrodlo ="";
-			
-			$('#guzik').click(function(){
-			var name =  document.getElementById('szukaj').value;
-			// socket.emit('addPhoto', name);
+		var userPhotos=[];
+		var uid ='';
+	  	function uniqId() {     	           
+		  return Math.round(new Date().getTime() + (Math.random() * 10000));
+		}	
 
-			socket.emit('newPhoto', name);			
-			socket.on('search',function (search){
-		      var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
-		      $.getJSON( flickerAPI, {
-		        tags: search,
-		        tagmode: "any",
-		        format: "json"
-		      }).done(function( data ){
-				  $.each( data.items, function( i, item ) {
-		          $("#gallery").append("<li class='img-rounded'>"+search+"</li>");
-		          $("#gallery li:last-child").prev().removeClass("image");
-		          $("#gallery li:last-child").addClass("image").draggable(
-		          	{
-					drag: function(){
-						var offset = $(this).offset();
-						var xPos = offset.left;
-						var yPos = offset.top;
-						$('#posX').text('x: ' + xPos);
-           				$('#posY').text('y: ' + yPos);
-						socket.emit('movePhoto',   xPos,yPos);						
-					},
-					 stop: function(){
-			            var finalOffset = $(this).offset();
-			            var finalxPos = finalOffset.left;
-			            var finalyPos = finalOffset.top;
-			        }
-					 	});
-		          fotka = item.media.m;
-		          zrodlo = search;
-		         // socket.emit('src',item.media.m,search);
-		          $( "<img/>" ).attr( "src", item.media.m ).appendTo('.image');
-		          	if ( i === 0 ) {
-		          	  return false;
-		          	}
-	        	});
-         	});
-			});
+		$('#guzik').click(function(){
+				socket.emit('getId');
+				socket.on('sendId',function (id){				
+						uid = id+uniqId();						
+				});
+				userPhotos[uid] = {
+						    id : uid,
+						    name : 'name',
+						    src  : 'src'
+						};
+				userPhotos[uid].name =  document.getElementById('szukaj').value;
+				
+		
+				// addUserPhoto(name,uid);				
+				// socket.emit('addPhoto', name);
+				// socket.emit('newPhoto', name);			
+				// socket.on('search',
+					
+			      var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
+			      $.getJSON( flickerAPI, {
+			        tags: userPhotos[uid].name,
+			        tagmode: "any",
+			        format: "json"
+				      }).done(function( data ){		      	  
+						  $.each( data.items, function( i, item ) {
+				          $("#gallery").append("<li id='"+userPhotos[uid].id+"' class='img-rounded'>"+userPhotos[uid].name+"</li>");
+				          $("#gallery li:last-child").prev().removeClass("image");
+				          $("#gallery li:last-child").addClass("image").draggable(
+					          	{
+										drag: function(){
+											var offset = $(this).offset();
+											var xPos = offset.left;
+											var yPos = offset.top;
+											$('#posX').text('x: ' + xPos);
+					           				$('#posY').text('y: ' + yPos);
+											socket.emit('movePhoto',   xPos,yPos);						
+										},
+										 stop: function(){
+								            var finalOffset = $(this).offset();
+								            var finalxPos = finalOffset.left;
+								            var finalyPos = finalOffset.top;
+								        }
+								}
+							);
+					        	//addUserPhoto(,,item.media.m);
+					        	//$('.uid').append("<div>+userPhotos[uid].src+</div>");
+					          //socket.emit('newPhoto',name,src);
+					          alert( item.media.m);
+					          $( "<img/>" ).attr( "src", item.media.m ).appendTo('.image');
+					          	if ( i === 0 ) {
+					          	  return false;
+					          	}
+					          	
+			        	 });
+		         	});
+
+				
 			
 		});
 		// socket.on('showBoardToAll',function (src,search){
@@ -66,9 +85,17 @@ $(document).ready(function () {
 
 			        drop: function( event, ui ) {
 				        $('#Board').html( "Dropped!");
-				        socket.emit('src',fotka,zrodlo);
-				        $('#Board').html(fotka);
-				        $('#Board').html("search "+zrodlo);
+				        // socket.emit('src',fotka,zrodlo);
+				        //socket.get();
+				         socket.emit('src',photo.src,photo.name);
+				        // $('#Board').html(fotka);
+				        // $('#Board').html("search "+zrodlo);
+				    },
+				    out : function(){
+				    	 $('#Board').html( "out!");
+				    	 $(this).animate({'border-width' : '1px',
+			                             'border-color' : '#0f0'
+			                            }, 500);
 				    }
 
 		    	 });

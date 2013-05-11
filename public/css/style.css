@@ -9,9 +9,6 @@
 		border-radius: 50%;
 		box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
 		}
-#Panel{width:640px; height: 1136px;}
-#pierwszy{width: 300px; background-color: LightBlue;}
-#drugi{background-color: DarkBlue;}
 #Board{
     width: 30em;
     height: 30em;

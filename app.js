@@ -25,33 +25,42 @@ io.sockets.on('connection', function (socket) {
 
     socket.emit("init", photos);
 
+    socket.on('getId', function() {
+    var id = socket.id;    
+      socket.emit('sendId', id);
+       });
+
     socket.on('disconnect', function() {
       delete photos[socket.id];
       socket.broadcast.emit("disconnectUser", socket.id);
        });
 
-      socket.on('newPhoto', function (name){
-         console.log('server dostalem '+name);
-         var search = name;
-            socket.emit('search', search);            
-            // console.log('wyslalem '+search);
-      });
+      // socket.on('newPhoto', function (name){
+      //    // console.log('server dostalem '+name);
+      //    var search = name;
+      //       socket.emit('search', search);            
+      //       // console.log('wyslalem '+search);
+      // });
       socket.on('src', function (src , search){        
         socket.broadcast.emit('searchToAll',src,search);
-        console.log('wyslalem '+ src);
+        console.log('wyslalem src '+ src);
+        console.log('wyslalem search'+ search);
+
       });
-      socket.on('addPhoto', function (name) {
+      socket.on('newPhoto', function (name,src) {
         var photo=[];
         photos[socket.id] = {
             "x" : 0,
             "y" : 0,
             "name" : name,
+            "src" : src,
             "id" : socket.id
         };
-        socket.broadcast.emit('createPhoto', photos[socket.id]);
-        console.log("Serwer "+ name);
-        console.log(JSON.stringify(photos));
-    });
+            socket.emit('search', photos[socket.id]);
+            // console.log("newPhoto name "+ photos[socket.id].name);
+            // console.log("newPhoto src"+ photos[socket.id].src);
+            //console.log(JSON.stringify(photos));
+        });
 
         socket.on('movePhoto', function (x,y) {
         console.log('server x '+ x);
