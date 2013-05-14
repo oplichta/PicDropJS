@@ -17,23 +17,26 @@ var server = http.createServer(app).listen(app.get('port'), function () {
     console.log("Serwer nasłuchuje na porcie " + app.get('port'));
 });
 
-var photos = {};
+var photos ={};
+
 var io  = require('socket.io');
 io = io.listen(server); 
 
+
 io.sockets.on('connection', function (socket) {
 
-    socket.emit("init", photos);
+    //socket.emit("init", userPhotos);
 
-    socket.on('getId', function() {
-    var id = socket.id;    
-      socket.emit('sendId', id);
+    socket.on('getId', function(){
+    var id = socket.id; 
+    socket.emit('sendId', id);
+    console.log('wyslalem id: '+id);
        });
 
-    socket.on('disconnect', function() {
-      delete photos[socket.id];
-      socket.broadcast.emit("disconnectUser", socket.id);
-       });
+    // socket.on('disconnect', function() {
+    //   delete photos[socket.id];
+    //   socket.broadcast.emit("disconnectUser", socket.id);
+    //    });
 
       // socket.on('newPhoto', function (name){
       //    // console.log('server dostalem '+name);
@@ -41,24 +44,31 @@ io.sockets.on('connection', function (socket) {
       //       socket.emit('search', search);            
       //       // console.log('wyslalem '+search);
       // });
-      socket.on('src', function (src , search){        
-        socket.broadcast.emit('searchToAll',src,search);
-        console.log('wyslalem src '+ src);
-        console.log('wyslalem search'+ search);
+  
+      function uniqId() {                  
+      return Math.round(new Date().getTime() + (Math.random() * 10000));
+    }
+
+      socket.on('src', function (userPhoto){        
+        socket.broadcast.emit('searchToAll',photos);
+        console.log('wyslalem src '+ photos.id);
+        console.log('wyslalem src '+ photos.src);
+        console.log('wyslalem search'+ photos.search);
 
       });
       socket.on('newPhoto', function (name,src) {
+        var uid= socket.id+uniqId();
         var photo=[];
-        photos[socket.id] = {
+        photos[uid] = {
+            "id" : uid,
             "x" : 0,
             "y" : 0,
             "name" : name,
-            "src" : src,
-            "id" : socket.id
+            "src" : src                    
         };
-            socket.emit('search', photos[socket.id]);
-            // console.log("newPhoto name "+ photos[socket.id].name);
-            // console.log("newPhoto src"+ photos[socket.id].src);
+            socket.emit('show', photos[uid]);
+            console.log("newPhoto name "+ photos[uid].name);
+             console.log("newPhoto src"+ photos[uid].src);
             //console.log(JSON.stringify(photos));
         });
 

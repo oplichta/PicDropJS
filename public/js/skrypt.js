@@ -1,73 +1,66 @@
 /*jshint node: true, browser: true, jquery: true */
 /*global io: false */
 $(document).ready(function () {
-	 'use strict';
+	 	'use strict';
 		var socket = io.connect('http://localhost:3000');
-		var userPhotos=[];
-		var uid ='';
-	  	function uniqId() {     	           
-		  return Math.round(new Date().getTime() + (Math.random() * 10000));
-		}	
+		var userPhoto = {
+			name : 'nazwa',
+			src : 'src'
+		};
+
+	 //  	function uniqId() {     	           
+		//   return Math.round(new Date().getTime() + (Math.random() * 10000));
+		// }	
 
 		$('#guzik').click(function(){
-				socket.emit('getId');
-				socket.on('sendId',function (id){				
-						uid = id+uniqId();						
-				});
-				userPhotos[uid] = {
-						    id : uid,
-						    name : 'name',
-						    src  : 'src'
-						};
-				userPhotos[uid].name =  document.getElementById('szukaj').value;
-				
+		userPhoto.name =  document.getElementById('szukaj').value;
 		
-				// addUserPhoto(name,uid);				
-				// socket.emit('addPhoto', name);
-				// socket.emit('newPhoto', name);			
-				// socket.on('search',
-					
+		
 			      var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
 			      $.getJSON( flickerAPI, {
-			        tags: userPhotos[uid].name,
+			        tags: userPhoto.name,
 			        tagmode: "any",
 			        format: "json"
 				      }).done(function( data ){		      	  
 						  $.each( data.items, function( i, item ) {
-				          $("#gallery").append("<li id='"+userPhotos[uid].id+"' class='img-rounded'>"+userPhotos[uid].name+"</li>");
-				          $("#gallery li:last-child").prev().removeClass("image");
-				          $("#gallery li:last-child").addClass("image").draggable(
-					          	{
-										drag: function(){
-											var offset = $(this).offset();
-											var xPos = offset.left;
-											var yPos = offset.top;
-											$('#posX').text('x: ' + xPos);
-					           				$('#posY').text('y: ' + yPos);
-											socket.emit('movePhoto',   xPos,yPos);						
-										},
-										 stop: function(){
-								            var finalOffset = $(this).offset();
-								            var finalxPos = finalOffset.left;
-								            var finalyPos = finalOffset.top;
-								        }
-								}
-							);
-					        	//addUserPhoto(,,item.media.m);
-					        	//$('.uid').append("<div>+userPhotos[uid].src+</div>");
-					          //socket.emit('newPhoto',name,src);
-					          alert( item.media.m);
-					          $( "<img/>" ).attr( "src", item.media.m ).appendTo('.image');
-					          	if ( i === 0 ) {
-					          	  return false;
-					          	}
-					          	
+
+							  	userPhoto.src = item.media.m;
+							  	socket.emit('newPhoto',userPhoto.name,userPhoto.src);
+							  	socket.on('show',function (photo){
+							          $("#gallery").append("<li id='"+photo.id+"' class='img-rounded'>"+photo.name+"</li>");
+							          $("#gallery li:last-child").prev().removeClass("image");
+							          $("#gallery li:last-child").addClass("image").draggable(
+								          	{
+													drag: function(){
+														var offset = $(this).offset();
+														var xPos = offset.left;
+														var yPos = offset.top;
+														$('#posX').text('x: ' + xPos);
+								           				$('#posY').text('y: ' + yPos);
+														socket.emit('movePhoto',   xPos,yPos);						
+													},
+													 stop: function(){
+											            var finalOffset = $(this).offset();
+											            var finalxPos = finalOffset.left;
+											            var finalyPos = finalOffset.top;
+											        }
+											}
+										);		        				       
+								        	
+								         
+								          $( "<img/>" ).attr( "src", photo.src ).appendTo('.image');
+								    });	
+								          	if ( i === 0 ) {
+								          	  return false;
+								          	}				          
+					         	
 			        	 });
 		         	});
 
 				
 			
 		});
+
 		// socket.on('showBoardToAll',function (src,search){
 				$('#Board').droppable(
 				{
@@ -87,7 +80,7 @@ $(document).ready(function () {
 				        $('#Board').html( "Dropped!");
 				        // socket.emit('src',fotka,zrodlo);
 				        //socket.get();
-				         socket.emit('src',photo.src,photo.name);
+				         //socket.emit('src',userPhoto);
 				        // $('#Board').html(fotka);
 				        // $('#Board').html("search "+zrodlo);
 				    },
@@ -103,22 +96,22 @@ $(document).ready(function () {
 
 
 		// });
-		socket.on('searchToAll',function (src,search){
-			$("#Board").append("<li>"+search+"</li>");
-		          $("#Board li:last-child").prev().removeClass("image");
-		          $("#Board li:last-child").addClass("image").draggable(
-		          	{
-					drag: function(){
-						var offset = $(this).offset();
-						var xPos = offset.left;
-						var yPos = offset.top;
-						$('#posX').text('x: ' + xPos);
-           				$('#posY').text('y: ' + yPos);
-						socket.emit('movePhoto',   xPos,yPos);						
-					}
-					});		          
-		          $( "<img/>" ).attr( "src", src ).appendTo('.image');		          	
-		});
+			// socket.on('searchToAll',function (userPhoto)){
+			// 	$("#Board").append("<li id='"+userPhoto.id+"'>"+userPhoto.name+"</li>");
+			//           $("#Board li:last-child").prev().removeClass("image");
+			//           $("#Board li:last-child").addClass("image").draggable(
+			//           	{
+			// 			drag: function(){
+			// 				var offset = $(this).offset();
+			// 				var xPos = offset.left;
+			// 				var yPos = offset.top;
+			// 				$('#posX').text('x: ' + xPos);
+	  		//      		$('#posY').text('y: ' + yPos);
+			// 				socket.emit('movePhoto',   xPos,yPos);						
+			// 			}
+			// 			});		          
+			//           $( "<img/>" ).attr( "src", userPhotos[uid].src ).appendTo('.image');		          	
+			// });
 		// socket.on('createPhoto', function (photo) {
 		// 	console.log(name);
 		// 	$('#gallery').append('<div class="photo" id='+photo.id+'>'+photo.name+'</div>');
