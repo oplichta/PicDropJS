@@ -4,17 +4,13 @@ $(document).ready(function () {
 	 	'use strict';
 		var socket = io.connect('http://localhost:3000');
 		var userPhoto = {
+			id : 'id',
 			name : 'nazwa',
 			src : 'src'
 		};
 
-	 //  	function uniqId() {     	           
-		//   return Math.round(new Date().getTime() + (Math.random() * 10000));
-		// }	
-
 		$('#guzik').click(function(){
-		userPhoto.name =  document.getElementById('szukaj').value;
-		
+		userPhoto.name =  document.getElementById('szukaj').value;		
 		
 			      var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
 			      $.getJSON( flickerAPI, {
@@ -22,13 +18,12 @@ $(document).ready(function () {
 			        tagmode: "any",
 			        format: "json"
 				      }).done(function( data ){		      	  
-						  $.each( data.items, function( i, item ) {
-
+						  $.each( data.items, function( i, item ) {						  		
 							  	userPhoto.src = item.media.m;
 							  	socket.emit('newPhoto',userPhoto.name,userPhoto.src);
 							  	socket.on('show',function (photo){
 							          $("#gallery").append("<li id='"+photo.id+"' class='img-rounded'>"+photo.name+"</li>");
-							          $("#gallery li:last-child").prev().removeClass("image");
+							          $("#gallery li").prev().removeClass("image");
 							          $("#gallery li:last-child").addClass("image").draggable(
 								          	{
 													drag: function(){
@@ -49,19 +44,16 @@ $(document).ready(function () {
 								        	
 								         
 								          $( "<img/>" ).attr( "src", photo.src ).appendTo('.image');
-								    });	
+								    });											
 								          	if ( i === 0 ) {
 								          	  return false;
 								          	}				          
 					         	
 			        	 });
-		         	});
-
-				
-			
+		         	});	
 		});
 
-		// socket.on('showBoardToAll',function (src,search){
+		
 				$('#Board').droppable(
 				{
 		        //accept: '#gallery',
@@ -75,14 +67,12 @@ $(document).ready(function () {
 			            //$('#gallery').draggable('option','containment',$(this));
 			           
 			        },
-
 			        drop: function( event, ui ) {
-				        $('#Board').html( "Dropped!");
-				        // socket.emit('src',fotka,zrodlo);
-				        //socket.get();
-				         //socket.emit('src',userPhoto);
-				        // $('#Board').html(fotka);
-				        // $('#Board').html("search "+zrodlo);
+				        $('#Board').html( "Dropped!");				        
+				          var id = $(ui.draggable).attr('id');
+				         socket.emit('src',id);
+				         // $('#Board').html();
+				         // $('#Board').html(" "+zrodlo);
 				    },
 				    out : function(){
 				    	 $('#Board').html( "out!");
@@ -93,25 +83,24 @@ $(document).ready(function () {
 
 		    	 });
 
+		
+			socket.on('searchToAll',function (photo){				
+				$("#Board").append("<li id='"+photo.id+"'>"+photo.name+"</li>");
+			          $("#Board li:last-child").prev().removeClass("image");
+			          $("#Board li:last-child").addClass("image").draggable(
+			          	{
+						drag: function(){
+							var offset = $(this).offset();
+							var xPos = offset.left;
+							var yPos = offset.top;
+							$('#posX').text('x: ' + xPos);
+	  		     			$('#posY').text('y: ' + yPos);
+							socket.emit('movePhoto',   xPos,yPos);						
+						}
+						});		          
+			          $( "<img/>" ).attr( "src",photo.src ).appendTo('.image');		          	
+			});
 
-
-		// });
-			// socket.on('searchToAll',function (userPhoto)){
-			// 	$("#Board").append("<li id='"+userPhoto.id+"'>"+userPhoto.name+"</li>");
-			//           $("#Board li:last-child").prev().removeClass("image");
-			//           $("#Board li:last-child").addClass("image").draggable(
-			//           	{
-			// 			drag: function(){
-			// 				var offset = $(this).offset();
-			// 				var xPos = offset.left;
-			// 				var yPos = offset.top;
-			// 				$('#posX').text('x: ' + xPos);
-	  		//      		$('#posY').text('y: ' + yPos);
-			// 				socket.emit('movePhoto',   xPos,yPos);						
-			// 			}
-			// 			});		          
-			//           $( "<img/>" ).attr( "src", userPhotos[uid].src ).appendTo('.image');		          	
-			// });
 		// socket.on('createPhoto', function (photo) {
 		// 	console.log(name);
 		// 	$('#gallery').append('<div class="photo" id='+photo.id+'>'+photo.name+'</div>');

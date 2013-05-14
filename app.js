@@ -27,12 +27,6 @@ io.sockets.on('connection', function (socket) {
 
     //socket.emit("init", userPhotos);
 
-    socket.on('getId', function(){
-    var id = socket.id; 
-    socket.emit('sendId', id);
-    console.log('wyslalem id: '+id);
-       });
-
     // socket.on('disconnect', function() {
     //   delete photos[socket.id];
     //   socket.broadcast.emit("disconnectUser", socket.id);
@@ -49,11 +43,11 @@ io.sockets.on('connection', function (socket) {
       return Math.round(new Date().getTime() + (Math.random() * 10000));
     }
 
-      socket.on('src', function (userPhoto){        
-        socket.broadcast.emit('searchToAll',photos);
-        console.log('wyslalem src '+ photos.id);
-        console.log('wyslalem src '+ photos.src);
-        console.log('wyslalem search'+ photos.search);
+      socket.on('src', function (id){        
+        socket.broadcast.emit('searchToAll',photos[id]);
+        console.log('wyslalem id '+ photos[id].id);
+        console.log('wyslalem src '+ photos[id].src);
+        // console.log('wyslalem search'+ photos.search);
 
       });
       socket.on('newPhoto', function (name,src) {
@@ -67,8 +61,8 @@ io.sockets.on('connection', function (socket) {
             "src" : src                    
         };
             socket.emit('show', photos[uid]);
-            console.log("newPhoto name "+ photos[uid].name);
-             console.log("newPhoto src"+ photos[uid].src);
+            // console.log("newPhoto name "+ photos[uid].name);
+            //  console.log("newPhoto src"+ photos[uid].src);
             //console.log(JSON.stringify(photos));
         });
 
