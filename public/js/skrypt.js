@@ -8,51 +8,56 @@ $(document).ready(function () {
 			name : 'nazwa',
 			src : 'src'
 		};
-
+//var ocenaObrazka= "<div id='ocena' style='margin: 0;' class='btn-toolbar'><div class='btn-group'><button data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Ocena <span class='caret'></span></button><ul class='dropdown-menu'><li id='ocena_1'><a href='#'><span class='badge  badge-important'>1</span></a></li><li id='ocena_2'><a href='#'><span class='badge badge-warning'>2</span></a></li><li id='ocena_3'><a href='#'><span class='badge '>3</span></a></li><li id='ocena_4'><a href='#'><span class='badge badge-info'>4</span></a></li><li id='ocena_5'><a href='#'><span class='badge badge-success'>5</span></a></li></ul></div></div>";
 		$('#guzik').click(function(){
-		userPhoto.name =  document.getElementById('szukaj').value;		
-		
-			      var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
-			      $.getJSON( flickerAPI, {
+			userPhoto.name =  document.getElementById('szukaj').value;
+			    var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
+			      $.getJSON( flickerAPI, {	
 			        tags: userPhoto.name,
 			        tagmode: "any",
 			        format: "json"
 				      }).done(function( data ){		      	  
 						  $.each( data.items, function( i, item ) {						  		
 							  	userPhoto.src = item.media.m;
-							  	socket.emit('newPhoto',userPhoto.name,userPhoto.src);
-							  	socket.on('show',function (photo){
-							          $("#gallery").append("<li id='"+photo.id+"' class='img-rounded'>"+photo.name+"</li>");
-							          $("#gallery li").prev().removeClass("image");
-							          $("#gallery li:last-child").addClass("image").draggable(
-								          	{
-													drag: function(){
-														var offset = $(this).offset();
-														var xPos = offset.left;
-														var yPos = offset.top;
-														$('#posX').text('x: ' + xPos);
-								           				$('#posY').text('y: ' + yPos);
-														socket.emit('movePhoto',   xPos,yPos);						
-													},
-													 stop: function(){
-											            var finalOffset = $(this).offset();
-											            var finalxPos = finalOffset.left;
-											            var finalyPos = finalOffset.top;
-											        }
-											}
-										);		        				       
-								        	
-								         
-								          $( "<img/>" ).attr( "src", photo.src ).appendTo('.image');
-								    });											
-								          	if ( i === 0 ) {
+							  	socket.emit('newPhoto',userPhoto.name,userPhoto.src);							  							  											
+								          	if ( i === 9 ) {
 								          	  return false;
-								          	}				          
-					         	
+								          	}   					         	
 			        	 });
 		         	});	
 		});
+	
+		$('.btn-group').click(function(){
+			//var o = $(".btn :checked").val();
+			if($('btn-group').is(':checked')) { alert("it's checked"); }
+			//$('#jakaOcena').text(o);
+		});
 
+	socket.on('show',function (photo){
+							          $("#gallery").append("<li id='"+photo.id+"' class='img-rounded'>"+photo.name+"</li>");  
+							          $("#gallery li").prev().removeClass("image");
+							          $("#gallery li:last-child").addClass("image").draggable(
+								   //        	{
+											// 		drag: function(){
+											// 			var offset = $(this).offset();
+											// 			var xPos = offset.left;
+											// 			var yPos = offset.top;
+											// 			$('#posX').text('x: ' + xPos);
+								   //         				$('#posY').text('y: ' + yPos);
+											// 			socket.emit('movePhoto',   xPos,yPos);						
+											// 		},
+											// 		 stop: function(){
+											//             var finalOffset = $(this).offset();
+											//             var finalxPos = finalOffset.left;
+											//             var finalyPos = finalOffset.top;
+											//         }
+											// }
+										);
+								          $( "<img/>" ).attr( "src", photo.src ).appendTo('.image');
+								    });
+			
+			//	var nowa = $("#ocenaa option:selected").text();  
+            //alert(nowa); 
 		
 				$('#Board').droppable(
 				{
