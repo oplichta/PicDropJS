@@ -26,21 +26,27 @@
   		</form>
 
 		                
-            
-        <div class="btn-group" data-toggle="buttons-radio">
-		  <button id='ocena' class="btn btn-danger">1</button>
-		  <button id='ocena' class="btn btn-warning">2</button>
-		  <button id='ocena' class="btn btn-info">3</button>
-		  <button id='ocena' class="btn btn-success">4</button>
-		  <button id='ocena' class="btn btn-primary">5</button>
-		</div>
-             <div id='jakaOcena'>ocena: 0</div>  
-   
+            <div  style='margin: 0;' class='btn-toolbar'>
+            	<div class='btn-group'>
+            		<button data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Ocena  <span class='caret'></span>
+            		</button>
+            		<ul class='dropdown-menu'>
+            			<li>
+            			<div id='ocena' class="btn-group" data-toggle="buttons-radio"> 
+            				 
+	            			  <button  class="btn btn-danger">1</button>
+							  <button  class="btn btn-warning">2</button>
+							  <button  class="btn btn-info">3</button>
+							  <button  class="btn btn-success">4</button>
+							  <button  class="btn btn-primary">5</button>
+						 </div>
+            			</li>            			
+            		</ul>
+            		<button id='jakaOcena' class="btn btn-success" >0</button>
+            		</div>
+            	</div>
 
-           
- 
-
-
+            <!-- <div id='jakaOcena'>ocena: 0</div>   -->
 
   		<div class='uid'>a<div>		 
 		 <div id='posX'>x0</div>

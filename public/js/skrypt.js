@@ -8,7 +8,11 @@ $(document).ready(function () {
 			name : 'nazwa',
 			src : 'src'
 		};
-//var ocenaObrazka= "<div id='ocena' style='margin: 0;' class='btn-toolbar'><div class='btn-group'><button data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Ocena <span class='caret'></span></button><ul class='dropdown-menu'><li id='ocena_1'><a href='#'><span class='badge  badge-important'>1</span></a></li><li id='ocena_2'><a href='#'><span class='badge badge-warning'>2</span></a></li><li id='ocena_3'><a href='#'><span class='badge '>3</span></a></li><li id='ocena_4'><a href='#'><span class='badge badge-info'>4</span></a></li><li id='ocena_5'><a href='#'><span class='badge badge-success'>5</span></a></li></ul></div></div>";
+
+ 	
+ 	var ocenaHTML ="<div  style='margin: 0' class='btn-toolbar'><div class='btn-group'><button data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Ocena <span class='caret'></span></button><ul class='dropdown-menu'><li><div id='ocenaa' class='btn-group' data-toggle='buttons-radio'><button  class='btn btn-danger'>1</button><button  class='btn btn-warning'>2</button><button  class='btn btn-info'>3</button><button  class='btn btn-success'>4</button><button  class='btn btn-primary'>5</button></div></li></ul><button id='jakaOcena' class='btn btn-success' >0</button></div></div>";
+
+
 		$('#guzik').click(function(){
 			userPhoto.name =  document.getElementById('szukaj').value;
 			    var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
@@ -27,16 +31,28 @@ $(document).ready(function () {
 		         	});	
 		});
 	
-		$('.btn-group').click(function(){
-			//var o = $(".btn :checked").val();
-			if($('btn-group').is(':checked')) { alert("it's checked"); }
-			//$('#jakaOcena').text(o);
-		});
+	var ocena = null;
+	$("#ocenaa > .btn").on("click", function(){
+ 	   ocena = +this.innerHTML;
+ 	   alert(ocena);
+  	  // $("#jakaOcena").html(ocena);
+	});
+	var ocena = null;
+	$("#ocena > .btn").on("click", function(){
+ 	   ocena = +this.innerHTML;
+ 	   //alert(ocena);
+  	   $("#jakaOcena").html(ocena);
+	});
+	
+		
+	
 
 	socket.on('show',function (photo){
-							          $("#gallery").append("<li id='"+photo.id+"' class='img-rounded'>"+photo.name+"</li>");  
-							          $("#gallery li").prev().removeClass("image");
-							          $("#gallery li:last-child").addClass("image").draggable(
+									  $("#gallery li").removeClass("image");
+							          $("#gallery").append("<li id='"+photo.id+"'><div  class='img-rounded'>"+photo.name+"</div></li>");
+							 
+							          
+							          $("#"+photo.id).addClass("image").draggable(
 								   //        	{
 											// 		drag: function(){
 											// 			var offset = $(this).offset();
@@ -53,7 +69,9 @@ $(document).ready(function () {
 											//         }
 											// }
 										);
-								          $( "<img/>" ).attr( "src", photo.src ).appendTo('.image');
+								         $("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
+								         $("#"+photo.id).append("<div>"+ocenaHTML+"</div>");
+								        								    
 								    });
 			
 			//	var nowa = $("#ocenaa option:selected").text();  
