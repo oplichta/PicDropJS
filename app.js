@@ -5,7 +5,7 @@ var http  = require('http');
 var path = require('path');
 var fs    = require('fs');
 var app = express();
-
+var room = "abc123";
 app.configure(function () {
     app.set('port', process.env.PORT || 3000);
     app.use(express.favicon());
@@ -23,9 +23,29 @@ var io  = require('socket.io');
 io = io.listen(server); 
 
 
-io.sockets.on('connection', function (socket) {
 
-    //socket.emit("init", userPhotos);
+io.sockets.on('connection', function (socket) {
+socket.on('newRoom',function(newRoom){
+   console.log('stary pokoj to '+room);
+   room=newRoom; 
+  console.log('nowy pokoj to newroom '+newRoom +' room= '+room);
+
+});
+
+
+ socket.on('room', function(room) {
+        socket.join(room);
+        console.log('dolaczyles do pokoju '+room);
+    });
+socket.on('message',function(wiad) {
+        console.log(wiad);
+       io.sockets.in(room).emit('messageToAll', wiad);
+       console.log('wyslalem wiadomosc '+ wiad+ ' do '+ room);
+    });
+io.sockets.clients('room');
+ 
+
+//socket.emit("init", userPhotos);
 
     // socket.on('disconnect', function() {
     //   delete photos[socket.id];
@@ -87,3 +107,8 @@ io.sockets.on('connection', function (socket) {
       //   }
     // });
   });
+
+
+
+
+
