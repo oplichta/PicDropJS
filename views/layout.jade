@@ -2,27 +2,26 @@ doctype 5
 html
   head
     meta(charset='utf-8')
-    title PicDrop
-    link(rel='stylesheet', href='http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css')
+    title PicDrop    
+    //link(rel='stylesheet', href='http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css')
     link(href='css/bootstrap.min.css', rel='stylesheet', media='screen')
-    link(rel='stylesheet', href='/css/bootstrap-responsive.min.css')
+    //link(rel='stylesheet', href='/css/bootstrap-responsive.min.css')
     link(rel='stylesheet', href='/css/style.css')
-    link(rel='stylesheet', href='/css/custom.css')
     //link(rel="stylesheet", href="/css/PicDrop.css")
-    link(rel='stylesheet', href='/css/bootstrap.css')
-    link(rel='stylesheet', href='/css/custom.css')
+    //link(rel='stylesheet', href='/css/bootstrap.css')
+    //link(rel='stylesheet', href='/css/custom.css')
     script(src='/js/jquery.min.js')
     script(type="text/javascript", src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js")
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(src='/js/bootstrap.min.js')
     script(src='/js/skrypt.js')    
   body
-    .navbar.navbar-inverse.navbar-fixed-top
+    .navbar.navbar-inverse.navbar-static-top
       .navbar-inner
         .container
           a.brand(href="/") PicDrop
           ul.nav
-            if (typeof(user) == 'undefined')
+           if (typeof(user) == 'undefined')
               li
                 a(href="/register") Zarejestruj
               li
@@ -30,7 +29,6 @@ html
             else
               li
                 a(href="/logout") Wyloguj
-    
       block content
-      .container
-      h2 Witamy w aplikacji PicDrop! :)
+     
+     

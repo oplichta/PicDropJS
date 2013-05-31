@@ -5,27 +5,31 @@ $(document).ready(function () {
 		var socket = io.connect('http://localhost:3000');
 		var userName = $('#userName').html();
 
-socket.emit('loadPhoto',userName);
+	socket.emit('loadPhoto',userName);
+	socket.emit('loadPhotoBoard',userName);
+
+	
+
 //ROOM-----------------------------------------
-// var room = "abc123";
+var room = userName;
 // //var room = prompt('jaki pokój: '); 
 
-// 	if(room !== null ){
-// 		$('#pokoj').html(room);
-// 		socket.emit('newRoom',room);
-// 	}
-// socket.on('connect', function() {
-//    // Connected, let's sign-up for to receive messages for this room
-//    socket.emit('room', room);   
+	if(room !== null ){
+		$('#pokoj').html(room);
+		socket.on('connect', function() {
+	   // Connected, let's sign-up for to receive messages for this room
+	   socket.emit('room', room);   
+		});
+ 	}
+$('#dolacz').click(function(){
+	var newRoom = prompt();
+	socket.emit('newRoom',newRoom);
+	});
+// socket.on('connectedClients',function (clients){
+// 	for (var i = 0; i < clients.length; i++) {
+// 		alert('connected clients'+clients[i]);
+// 	};
 // });
- 
-
-
-// $('#wyslij').click(function(){
-// 	var wiad = $('#inputTxt').val();
-// 	//alert(wiad);
-// 	socket.emit('message', wiad);
-// 	});
 // socket.on('messageToAll',function(wiad){
 // $('#odp').html(wiad);
 // });
@@ -46,7 +50,7 @@ socket.emit('loadPhoto',userName);
 		        }).done(function( data ){		      	  
 					  $.each( data.items, function( i, item ) {						  		
 						  	socket.emit('newPhoto',userName,photoName,item.media.m);							  							  											
-						          	if ( i === 0) {
+						          	if ( i === 4) {
 							          	  return false;
 							          	}   					         	
 		        	 });
@@ -68,53 +72,59 @@ socket.emit('loadPhoto',userName);
  		   //alert(ocena);
  	 $("#jakaOcenaa").html(ocenaa);
 	});
-	
-		
-	
+	socket.on('showLoadedPhoto',function (photo){
+	$.each( photo, function( i, photo ) {						  		
+		$("#gallery li").removeClass("image");
+		$("#gallery").append("<li id='"+photo._id+"'><div  class='img-rounded'>"+photo.photoName+"</div></li>");	          
+		$("#"+photo._id).addClass("image").draggable();
+		$("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
+		$("#"+photo._id).append("<div>"+ocenaHTML+"</div>");				  							  											
+			          	if ( i === 4) {
+				          	  return false;
+				          	}   					         	
+			        	 });	
+	});
 
 	socket.on('showPhoto',function (photo){
-									  $("#gallery li").removeClass("image");
-							          $("#gallery").append("<li id='"+photo._id+"'><div  class='img-rounded'>"+photo.photoName+"</div></li>");	          
-							          $("#"+photo._id).addClass("image").draggable(
-								   //        	{
-											// 		drag: function(){
-											// 			var offset = $(this).offset();
-											// 			var xPos = offset.left;
-											// 			var yPos = offset.top;
-											// 			$('#posX').text('x: ' + xPos);
-								   			// 			$('#posY').text('y: ' + yPos);
-											// 			socket.emit('movePhoto',   xPos,yPos);						
-											// 		},
-											// 		 stop: function(){
-											//             var finalOffset = $(this).offset();
-											//             var finalxPos = finalOffset.left;
-											//             var finalyPos = finalOffset.top;
-											//         }
-											// }
-										);
-								         $("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
-								         $("#"+photo._id).append("<div>"+ocenaHTML+"</div>");								        								    
-								    });
-		
+		  $("#gallery li").removeClass("image");
+          $("#gallery").append("<li id='"+photo._id+"'><div  class='img-rounded'>"+photo.photoName+"</div></li>");	          
+          $("#"+photo._id).addClass("image").draggable(
+	   			//        	{
+				// 		drag: function(){
+				// 			var offset = $(this).offset();
+				// 			var xPos = offset.left;
+				// 			var yPos = offset.top;
+				// 			$('#posX').text('x: ' + xPos);
+	   			// 			$('#posY').text('y: ' + yPos);
+				// 			socket.emit('movePhoto',   xPos,yPos);						
+				// 		},
+				// 		 stop: function(){
+				//             var finalOffset = $(this).offset();
+				//             var finalxPos = finalOffset.left;
+				//             var finalyPos = finalOffset.top;
+				//         }
+				// }
+			);
+	         $("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
+	         $("#"+photo._id).append("<div>"+ocenaHTML+"</div>");								        								    
+	    });
+
 				$('#Board').droppable(
 				{
 		        //accept: '#gallery',
 		        // activeClass: "ui-state-hover",
 		        // hoverClass: "ui-state-active",
-
 			        over : function(){
 			           $(this).animate({'border-width' : '5px',
 			                             'border-color' : '#0f0'
 			                            }, 500);
-			            //$('#gallery').draggable('option','containment',$(this));
-			           
+			            //$('#gallery').draggable('option','containment',$(this));      
 			        },
 			        drop: function( event, ui ) {
 				        $('#Board').html( "Dropped!");				        
 				          var id = $(ui.draggable).attr('id');
-				         socket.emit('src',id);
-				         // $('#Board').html();
-				         // $('#Board').html(" "+zrodlo);
+				          //alert(id);
+				         socket.emit('newOnBoard',id);
 				    },
 				    out : function(){
 				    	 $('#Board').html( "out!");
@@ -122,38 +132,38 @@ socket.emit('loadPhoto',userName);
 			                             'border-color' : '#0f0'
 			                            }, 500);
 				    }
-
 		    	 });
 
-		
-			socket.on('searchToAll',function (photo){				
-				$("#Board").append("<li id='"+photo.id+"'>"+photo.name+"</li>");
+			socket.on('boardToAll',function (photo){				
+				$("#Board").append("<li id='"+photo._id+"'>"+photo.photoName+"</li>");
 			          $("#Board li:last-child").prev().removeClass("image");
-			          $("#Board li:last-child").addClass("image").draggable(
-			          	{
-						drag: function(){
-							var offset = $(this).offset();
-							var xPos = offset.left;
-							var yPos = offset.top;
-							$('#posX').text('x: ' + xPos);
-	  		     			$('#posY').text('y: ' + yPos);
-							socket.emit('movePhoto',   xPos,yPos);						
-						}
-						});		          
+			          $("#Board li:last-child").addClass("image").draggable();
+			   //        	{
+						// drag: function(){
+						// 	var offset = $(this).offset();
+						// 	var xPos = offset.left;
+						// 	var yPos = offset.top;
+						// 	$('#posX').text('x: ' + xPos);
+	  		 // 				$('#posY').text('y: ' + yPos);
+						// 	socket.emit('movePhoto',   xPos,yPos);						
+						// }
+						// });		          
 			          $( "<img/>" ).attr( "src",photo.src ).appendTo('.image');		          	
 			});
 
-		// socket.on('createPhoto', function (photo) {
-		// 	console.log(name);
-		// 	$('#gallery').append('<div class="photo" id='+photo.id+'>'+photo.name+'</div>');
-		// 	$('#'+photo.id).draggable().css({'background-color' : 'blue'});
-		// });
-		// socket.on('init', function (photos) {
-		// 	$.each(photos, function(key, val) {
-		// 		$('#gallery').append('<div class="photo" id='+val.id+'>'+val.name+'</div>');
-		// 		$('#'+val.id).css({'position':'absolute', top:val.y , left:val.x , 'background-color' : 'grey'});
-		// 	});
-		// });
+	socket.on('showLoadedBoardPhoto',function (photo){
+		$.each( photo, function( i, photo ) {						  		
+			$("#Board li").removeClass("image");
+			$("#Board").append("<li id='"+photo._id+"'><div  class='img-rounded'>"+photo.photoName+"</div></li>");	          
+			$("#"+photo._id).addClass("image").draggable();
+			$("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
+			$("#"+photo._id).append("<div>"+ocenaHTML+"</div>");		  							  											
+			          	if ( i === 4) {
+				          	  return false;
+				          	}   					         	
+	   	 });	
+	});
+
 		socket.on('updatePhotoPosition', function (x,y) {
 			$('.image').css( { 'position':'absolute', top:y, left:x} );
 		});

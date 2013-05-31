@@ -1,3 +1,6 @@
+body {
+    overflow: auto;
+}
 #gallery { float: left; width: 65%; min-height: 12em; }
   .gallery.custom-state-active { background: #eee; }
   .gallery li { float: left; width: 150px; padding: 0.4em; margin: 0 0.4em 0.4em 0; text-align: center; }
@@ -7,6 +10,10 @@
   .gallery li img { width: 100%; cursor: move; }
  
 #Board{
+    position: absolute;
+    z-index:-1; 
+    top:10%;
+    left: 70%;
     width: 30%;
     height: 30em;
     padding: 0.5em;

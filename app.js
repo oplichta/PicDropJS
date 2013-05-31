@@ -11,7 +11,7 @@ var path = require('path');
 var fs    = require('fs');
 var app = express();
 var room = "";
-var nickname = ""
+var nickname = "";
 
 // Configuration-----------------------
 app.configure(function(){
@@ -47,84 +47,70 @@ app.configure('production', function(){
 var server = http.createServer(app).listen(app.get('port'), function () {
     console.log("Serwer nasłuchuje na porcie " + app.get('port'));
 });
-var photos ={};
+// var photos ={};
 var io  = require('socket.io');
 io = io.listen(server); 
 
+//database---------------------------------
 // Connect mongoose
 mongoose.connect('mongodb://localhost/passport_local_mongoose_examples');
 
-//database---------------------------------
 var db = mongoose.connection;
 var Photo = new Schema({
       photoName: String,
       src: String,
       mark: Number,
-      ownerId: String
+      ownerId: String,
+      inBoard: Boolean
 });
 var photoModel= mongoose.model('Photo',Photo);
-//zapis
-// db.on('open', function () {        
-//         var james = new photoModel({
-//             photoName: "photoNam" ,
-//             src: 'costam zrodldo',
-//             mark: 3,
-//             ownerId: "name"
-//         });
-//         james.save(function (err, item) {
-//             console.log(item);
-//            db.close();
-//         });
-//     });
 
 db.on('error', console.error.bind(console, 'connection error:'));
-   //usuwanie             
-// db.on('open', function () {
-//         Model.findOneAndRemove({nickname: "James"}).exec(function (err, person){
-//             console.log(person);
-        
-//      //  db.close();
-//     });
-// });
 
-// db.on('remove', function(){
-//  Model.remove(function ( err, item) {
-//   if (err) return handleError(err)
-//   Model.findById('51a72e20e8e6b3280a000001', function (err, item) {
-//     console.log(item+'wywalilo'); // null
-//   });
-// });
-// });
 //------------------------------------------
 
 //socketio----------------
 
 io.sockets.on('connection', function (socket) {
-    var db = mongoose.connection;
-var Photo = new Schema({
-      photoName: String,
-      src: String,
-      mark: Number,
-      ownerId: String
-});
-var photoModel= mongoose.model('Photo',Photo);
-//zapis
-
-// socket.on('newRoom',function(newRoom){
-//    console.log('stary pokoj to '+room);
-//    room=newRoom; 
-//   console.log('nowy pokoj to newroom '+newRoom +' room= '+room);
-
+//     var db = mongoose.connection;
+// var Photo = new Schema({
+//       photoName: String,
+//       src: String,
+//       mark: Number,
+//       ownerId: String,
+//       inBoard: Boolean
 // });
+// var photoModel= mongoose.model('Photo',Photo);
+//rooms-----------------------------------
+  // var clients = io.sockets.clients();
+ socket.on('room', function(room) {
+        socket.join(room);
+        //socket.emit('connectedClients',clients);
+        console.log('dolaczyles do pokoju '+room);
+    }); 
 
+ socket.on('newRoom',function (newRoom){
+       socket.join(newRoom);
+       // socket.emit('connectedClients',clients);
+       console.log('stary pokoj to '+room);
+      console.log('nowy pokoj to newroom '+newRoom +' room= '+room);
+    });
+
+// socket.on('message',function(wiad) {
+//         console.log(wiad);
+//        io.sockets.in(room).emit('messageToAll', wiad);
+//        console.log('wyslalem wiadomosc '+ wiad+ ' do '+ room);
+//     });
+//------------------------------------------
 socket.on('newPhoto',function (userName,photoNm,src){           
-        var james = new photoModel({
+        var photo = new photoModel({
             photoName: photoNm ,
             src: src,
-            mark: 3,
-            ownerId: userName
+            mark: 0,
+            ownerId: userName,
+            inBoard: false
         });
-        james.save(function (err, item) {
+        photo.save(function (err, item) {
             console.log(item);
         });
     console.log("photoName "+photoNm+" name "+userName+" src "+src);
@@ -132,66 +118,60 @@ socket.on('newPhoto',function (userName,photoNm,src){
             console.log(photo);
             socket.emit('showPhoto',photo);
         });
-    
 });
 
+// socket.on('countPhoto',function (userName){
+//  photoModel.count({ ownerId: userName }, function (err, count) {
+//     console.log(count);
+//     if(count!==0){socket.emit('countToClient',count);}
+//  });   
+// });
+
+
 socket.on('loadPhoto',function (userName){
-    photoModel.find({ownerId: userName}, function (err, photo) {
-            console.log(photo);            
-            if(photo.userName!== undefined){
-            socket.emit('showPhoto',photo);}
-        });
+    // console.log(userName); 
+    photoModel.find({ownerId: userName,inBoard: false}).exec(function (err, photo){
+           console.log(photo);
+           socket.emit('showLoadedPhoto',photo);
+    });
+});
+
+socket.on('loadPhotoBoard',function (userName){
+    console.log('photo from board of user '+userName); 
+    photoModel.find({ownerId: userName,inBoard: true}).exec(function (err, photo){
+           console.log(photo);
+           socket.emit('showLoadedBoardPhoto',photo);
+    });
 });
 
 socket.on('resetHistory',function (userName){
     photoModel.remove({ownerId: userName}).exec();
     console.log('usuwanie zdjec uzytkownika '+userName);
 });
-//  socket.on('room', function(room) {
-//         socket.join(room);
-//         console.log('dolaczyles do pokoju '+room);
-//     });
-// socket.on('message',function(wiad) {
-//         console.log(wiad);
-//        io.sockets.in(room).emit('messageToAll', wiad);
-//        console.log('wyslalem wiadomosc '+ wiad+ ' do '+ room);
-//     });
-// io.sockets.clients('room');
- 
 
-//socket.emit("init", userPhotos);
 
     // socket.on('disconnect', function() {
     //   delete photos[socket.id];
     //   socket.broadcast.emit("disconnectUser", socket.id);
     //    });
 
-      socket.on('src', function (id){        
-        socket.broadcast.emit('searchToAll',photos[id]);
-        console.log('wyslalem id '+ photos[id].id);
-        console.log('wyslalem src '+ photos[id].src);
-        // console.log('wyslalem search'+ photos.search);
-      });
+    socket.on('newOnBoard', function (id){      
+        console.log(id); 
+        photoModel.findOneAndUpdate({_id: id},{ $set: { inBoard: true }}).exec(function (err, photo){
+                 console.log(photo);
+              socket.broadcast.emit('boardToAll',photo);
+        });  
+    });
 
-        socket.on('movePhoto', function (x,y) {
-        console.log('server x '+ x);
-        console.log('server y '+ y);       
-        // if(typeof photos!='undefined'){
-        // photos[socket.id].x = x;
-        // photos[socket.id].y = y;
-        socket.broadcast.emit('updatePhotoPosition', x,y);
-        // }
-        });
-
-      // socket.on('movePhoto', function (photo) {
-      //   console.log('server x '+ photo.x);
-      //   console.log('server y '+ photo.y);
-      //   if(typeof photos[socket.id]!='undefined'){
-      //   photos[socket.id].x = photo.x;
-      //   photos[socket.id].y = photo.y;
-      //   socket.broadcast.emit('updatePhotoPosition', photos[socket.id]);
-      //   }
-    // });
+        // socket.on('movePhoto', function (x,y) {
+        // console.log('server x '+ x);
+        // console.log('server y '+ y);       
+        // // if(typeof photos!='undefined'){
+        // // photos[socket.id].x = x;
+        // // photos[socket.id].y = y;
+        // socket.broadcast.emit('updatePhotoPosition', x,y);
+        // // }
+        // });
   });
 
 
@@ -201,8 +181,6 @@ passport.use(new LocalStrategy(Account.authenticate()));
 
 passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
-
-
 
 // Setup routes
 require('./routes')(app);

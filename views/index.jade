@@ -1,16 +1,15 @@
 extends layout    
-.container
+
 block content
  if (user)
     div Witamy w PicDrop!
     div#userName #{user.username}
     form(action='#')
       input#szukaj(type='text', name='name', data-provide='typeahead')
-      p
-        input#guzik.btn.btn-primary(type='button', value='ok')
-    button#reset.btn.btn-success Usuń historie
-    .btn-toolbar(style='margin: 0;')
-      .btn-group
+      input#guzik.btn.btn-primary(type='button', value='ok')
+      button#reset.btn.btn-success Usuń historie
+      .btn-toolbar(style='margin: 0;')
+       .btn-group
         button.btn.btn-success.dropdown-toggle(data-toggle='dropdown')
           | Ocena
           span.caret
@@ -26,19 +25,9 @@ block content
     div
       | Twój pokój to:
       #pokoj ? 
-    input#inputTxt(type='text')
-    button#wyslij.btn.btn-success Wyslij
+      | Dołącz do innego pokoju:
+    button#dolacz.btn.btn-success Dołącz
     #odp  nic 
-    //#UserName  #{user.username}
-    //
-       <div class="btn-group"><button class="btn btn-success dropdown-toggle" data-toggle="dropdown">Ocena <span class="caret"></span></button><ul class="dropdown-menu"><li><div data-toggle="buttons-radio" class="btn-group" id="ocenaa"><button class="btn btn-danger">1</button><button class="btn btn-warning">2</button><button class="btn btn-info">3</button><button class="btn btn-success">4</button><button class="btn btn-primary">5</button></div></li></ul><button class="btn btn-success" id="jakaOcenaa">0</button></div> 
-    //
-       <div id='jakaOcena'>ocena: 0</div>   
-    .uid
-      | a
-      div
-        #posX x0
-        #posY y0
         ul#gallery.gallery
         #Board
           h4 Table
