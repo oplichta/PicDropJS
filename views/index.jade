@@ -24,9 +24,15 @@ block content
         button#jakaOcena.btn.btn-success 0
     div
       | Twój pokój to:
-      #pokoj ? 
+      #pokoj Globalny 
       | Dołącz do innego pokoju:
     button#dolacz.btn.btn-success Dołącz
+    button#recoverSession.btn.btn-success Przywróć ostatnią sesję
+    label Type in your Room Number 
+    input(type='text', id='room_number')
+    textarea(id='text_yo', rows='5', cols='10')
+    br
+    input(type='button', id='send_shit', value='Send Baby!')
     #odp  nic 
         ul#gallery.gallery
         #Board

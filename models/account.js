@@ -2,11 +2,10 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     passportLocalMongoose = require('../../../lib/passport-local-mongoose.js');
 
-var db = mongoose.connection;
-
 var Account = new Schema({
     nickname: String
 });
+
 
 Account.plugin(passportLocalMongoose);
 

@@ -4,39 +4,49 @@ $(document).ready(function () {
 	 	'use strict';
 		var socket = io.connect('http://localhost:3000');
 		var userName = $('#userName').html();
+		var room = 'Globalny';
 
-	socket.emit('loadPhoto',userName);
-	socket.emit('loadPhotoBoard',userName);
-
-	
-
-//ROOM-----------------------------------------
-var room = userName;
-// //var room = prompt('jaki pokój: '); 
-
-	if(room !== null ){
-		$('#pokoj').html(room);
-		socket.on('connect', function() {
-	   // Connected, let's sign-up for to receive messages for this room
-	   socket.emit('room', room);   
+	socket.emit('whatRoom',userName);						
+	socket.on('readRoom', function (pokoj){
+			 $('#pokoj').html(pokoj.room);
+			 if(pokoj === 'Globalny' ){
+			 	if(userName!== undefined || userName !== null || userName === pokoj.userName){
+				socket.emit('saveRoom',userName,'Globalny');
+				}
+			}
 		});
- 	}
+		
+//var	navbarHTML ="<div class='navbar-inner'><div class='container'><a class='btn btn-navbar' data-target='.navbar-inverse-collapse' data-toggle='collapse'><span class='icon-bar'></span><span class='icon-bar'></span><span class='icon-bar'></span></a><a class='brand' href='#'>Title</a><div class='nav-collapse collapse navbar-inverse-collapse'><ul class='nav'><li class='active'><a href='#'>Home</a></li><li><a href='#'>Link</a></li><li><a href='#'>Link</a></li><li class='dropdown'><a class='dropdown-toggle' data-toggle='dropdown' href='#'><ul class='dropdown-menu'></li></ul><form class='navbar-search pull-left' action=''><input class='search-query span2' type='text' placeholder='Search'></form><ul class='nav pull-right'><li><a href='#'>Link</a></li><li class='divider-vertical'></li><li class='dropdown'><a class='dropdown-toggle' data-toggle='dropdown' href='#'>Dropdown<b class='caret'></b></a><ul class='dropdown-menu'><li><a href='#'>Action</a></li><li><a href='#'>Another action</a></li><li><a href='#'>Something else here</a></li><li class='divider'></li><li><a href='#'>Separated link</a></li></ul></li></ul></div></div></div></div>"
+	
+//ROOM-----------------------------------------
+
 $('#dolacz').click(function(){
-	var newRoom = prompt();
-	socket.emit('newRoom',newRoom);
-	});
-// socket.on('connectedClients',function (clients){
-// 	for (var i = 0; i < clients.length; i++) {
-// 		alert('connected clients'+clients[i]);
-// 	};
-// });
-// socket.on('messageToAll',function(wiad){
-// $('#odp').html(wiad);
-// });
-//----------------------------------------------
-	$('#reset').click(function(){
+	var newRoom = prompt('Wpisz nazwę pokoju: ');
+	if(newRoom !== null || newRoom !== undefined){
+		socket.emit('newRoom',newRoom,userName);
+		$('#pokoj').html(newRoom);
+	}
+});
+
+$('#recoverSession').click(function(){							
+			var tmpRoom = $('#pokoj').html();
+			socket.emit('loadPhoto',userName,tmpRoom);
+			socket.emit('loadPhotoBoard',tmpRoom);		
+});
+
+$('#reset').click(function(){
 		socket.emit('resetHistory',userName);
 	});
+//pozniej wczytaj zdjecia i zdjecia pokoju z tablicy
+		
+	//$('body').append(navbarHTML);
+	//	socket.on('connect', function() {
+	// Connected, let's sign-up for to receive messages for this room
+	//   socket.emit('room', room);   
+	//	});
+ 	
+//----------------------------------------------
+	
 
  	var ocenaHTML ="<div  style='margin: 0' class='btn-toolbar'><div class='btn-group'><button data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Ocena <span class='caret'></span></button><ul class='dropdown-menu'><li><div id='ocenaa' class='btn-group' data-toggle='buttons-radio'><button  class='btn btn-danger'>1</button><button  class='btn btn-warning'>2</button><button  class='btn btn-info'>3</button><button  class='btn btn-success'>4</button><button  class='btn btn-primary'>5</button></div></li></ul><button id='jakaOcenaa' class='btn btn-success' >0</button></div></div>";
 
