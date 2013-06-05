@@ -133,39 +133,53 @@ socket.on('newPhoto',function (userName,photoNm,src){
             console.log(item);
         });
         console.log("photoName "+photoNm+" name "+userName+" src "+src+"room "+item.room);
-        photoModel.findOne({src: src}).exec(function (err, photo){
+        photoModel.findOne({src: src},function (err, photo){
+            if (err) { console.log('Błąd odczytu'); }
+            if (item) {
             console.log('wysyłam do pokoju item.room= :'+item.room)
-             socket.join(item.room);
-            io.sockets.in(item.room).emit('showPhoto',photo);
+            socket.join(item.room);
+             socket.emit('showPhoto',photo);
+            }
         });
     });
 });
 
-
-// socket.on('countPhoto',function (userName){
-//  photoModel.count({ ownerId: userName }, function (err, count) {
-//     console.log(count);
-//     if(count!==0){socket.emit('countToClient',count);}
-//  });   
-// });
-
+socket.on('newOnBoard', function (id,room){      
+        console.log(id); 
+        photoModel.findOneAndUpdate({_id: id},{ $set: { inBoard: true,room: room}}).exec(function (err, photo){
+                 console.log(photo);
+                 socket.join(room);
+            socket.broadcast.to(room).emit('boardToAll',photo);
+        });  
+    });
 
 socket.on('loadPhoto',function (userName,room){
-    // console.log(userName); 
-    socket.join(room);
-    photoModel.find({ownerId: userName,inBoard: false,room: room}).exec(function (err, photo){
-           console.log(" do pokoju "+room);           
-           io.sockets.in(room).emit('showLoadedPhoto',photo);
-           //socket.emit('showLoadedPhoto',photo);
+    var counted;
+     photoModel.count({ ownerId: userName,inBoard: false,room: room }, function (err, count) {
+        console.log(count);
+        counted=count;
     });
+    socket.join(room);
+    if(counted!== 0){
+        photoModel.find({ownerId: userName,inBoard: false,room: room}).exec(function (err, photo){           
+               socket.emit('showLoadedPhoto',photo,counted);
+        });
+    }
 });
 
 socket.on('loadPhotoBoard',function (room){
-    photoModel.find({inBoard: true,room: room}).exec(function (err, photo){
-           console.log('wczytuje zdjecia z tablicy w pokoju '+room);
-           socket.join(room);
-           io.sockets.in(room).emit('showLoadedBoardPhoto',photo);
-    });
+    var counted;
+     photoModel.count({inBoard: true,room: room }, function (err, count) {
+        console.log(count);
+        counted=count;
+    });   
+    if(counted!== 0){
+        socket.join(room);
+        photoModel.find({inBoard: true,room: room}).exec(function (err, photo){
+            console.log('wczytuje zdjecia z tablicy w pokoju '+room);
+            io.sockets.in(room).emit('showLoadedBoardPhoto',photo,counted);
+        });
+    }
 });
 
 socket.on('resetHistory',function (userName){
@@ -179,16 +193,7 @@ socket.on('resetHistory',function (userName){
     //   socket.broadcast.emit("disconnectUser", socket.id);
     //    });
 
-    // socket.on('newOnBoard', function (id,room){      
-    //     console.log(id); 
-    //     photoModel.findOneAndUpdate({_id: id},{ $set: { inBoard: true,room: room}}).exec(function (err, photo){
-    //              console.log(photo);
-    //              socket.join(room);
-    //         io.sockets.in(room).emit('boardToAll',photo);
-    //          // socket.broadcast.emit('boardToAll',photo);
-    //     });  
-    // });
-
+    
   });
 
 

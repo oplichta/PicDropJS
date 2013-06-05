@@ -26,16 +26,25 @@ block content
       | Twój pokój to:
       #pokoj Globalny 
       | Dołącz do innego pokoju:
-    button#dolacz.btn.btn-success Dołącz
-    button#recoverSession.btn.btn-success Przywróć ostatnią sesję
-    label Type in your Room Number 
-    input(type='text', id='room_number')
-    textarea(id='text_yo', rows='5', cols='10')
-    br
-    input(type='button', id='send_shit', value='Send Baby!')
-    #odp  nic 
-        ul#gallery.gallery
-        #Board
-          h4 Table
+     button#dolacz.btn.btn-success Dołącz
+     button#recoverSession.btn.btn-success Przywróć ostatnią sesję
+     a.zoom.btn.btn-success(role='button', data-toggle='modal')
+       i.icon-zoom-in
+    //
+       Modal 
+    #myModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h3#myModalLabel Modal header
+      .modal-body
+        p
+          img#fotka(src='http://farm4.staticflickr.com/3717/8957295072_4396d97229_m.jpg')
+      .modal-footer
+        button.btn(data-dismiss='modal', aria-hidden='true') OK
+    ul#gallery.gallery
+    #Board
+      h4 Table
+
+
 
   

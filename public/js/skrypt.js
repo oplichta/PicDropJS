@@ -37,6 +37,14 @@ $('#recoverSession').click(function(){
 $('#reset').click(function(){
 		socket.emit('resetHistory',userName);
 	});
+
+$('.zoom').click(function(){
+	var id = $('.zoom').closest('li').attr('id');
+	alert(id);
+	// var value = $("#"+id+"").attr( "src" ); 
+	// value = value.replace("_m", "_b");
+	// $("#fotka").attr( "src", value );
+});
 //pozniej wczytaj zdjecia i zdjecia pokoju z tablicy
 		
 	//$('body').append(navbarHTML);
@@ -48,8 +56,7 @@ $('#reset').click(function(){
 //----------------------------------------------
 	
 
- 	var ocenaHTML ="<div  style='margin: 0' class='btn-toolbar'><div class='btn-group'><button data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Ocena <span class='caret'></span></button><ul class='dropdown-menu'><li><div id='ocenaa' class='btn-group' data-toggle='buttons-radio'><button  class='btn btn-danger'>1</button><button  class='btn btn-warning'>2</button><button  class='btn btn-info'>3</button><button  class='btn btn-success'>4</button><button  class='btn btn-primary'>5</button></div></li></ul><button id='jakaOcenaa' class='btn btn-success' >0</button></div></div>";
-
+ 	var ocenaHTML ="<div  style='margin: 0' class='btn-toolbar'><div class='btn-group'><button data-toggle='dropdown' class='btn btn-success dropdown-toggle'>Ocena <span class='caret'></span></button><ul class='dropdown-menu'><li><div class='btn-group ocenaa' data-toggle='buttons-radio'><button  class='btn btn-danger'>1</button><button  class='btn btn-warning'>2</button><button  class='btn btn-info'>3</button><button  class='btn btn-success'>4</button><button  class='btn btn-primary'>5</button></div></li></ul><button class='jakaOcenaa btn btn-success' >0</button><button   class='zoom btn btn-success' data-toggle='modal'><i class='icon-zoom-in'></i></button></div></div>";
 	$('#guzik').click(function(){
 	var	photoName =  document.getElementById('szukaj').value;
 		    var flickerAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
@@ -77,19 +84,19 @@ $('#reset').click(function(){
 	});
 
 	var ocenaa = null;
-	$("#ocenaa > .btn").on("click", function(){
+	$("ui.draggable > .ocenaa > .btn").on("click", function(){
  	  ocenaa = +this.innerHTML;
  		   //alert(ocena);
- 	 $("#jakaOcenaa").html(ocenaa);
+ 	 $("ui.draggable > .jakaOcenaa").html(ocenaa);
 	});
-	socket.on('showLoadedPhoto',function (photo){
+	socket.on('showLoadedPhoto',function (photo,count){
 	$.each( photo, function( i, photo ) {						  		
 		$("#gallery li").removeClass("image");
 		$("#gallery").append("<li id='"+photo._id+"'><div  class='img-rounded'>"+photo.photoName+"</div></li>");	          
 		$("#"+photo._id).addClass("image").draggable();
 		$("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
 		$("#"+photo._id).append("<div>"+ocenaHTML+"</div>");				  							  											
-			          	if ( i === 4) {
+			          	if ( i === count) {
 				          	  return false;
 				          	}   					         	
 			        	 });	
@@ -133,8 +140,8 @@ $('#reset').click(function(){
 			        drop: function( event, ui ) {
 				        $('#Board').html( "Dropped!");				        
 				          var id = $(ui.draggable).attr('id');
-				          //alert(id);
-				         socket.emit('newOnBoard',id);
+				          var tmpRoom =$('#pokoj').html();
+				         socket.emit('newOnBoard',id,tmpRoom);
 				    },
 				    out : function(){
 				    	 $('#Board').html( "out!");
@@ -144,31 +151,28 @@ $('#reset').click(function(){
 				    }
 		    	 });
 
-			socket.on('boardToAll',function (photo){				
-				$("#Board").append("<li id='"+photo._id+"'>"+photo.photoName+"</li>");
-			          $("#Board li:last-child").prev().removeClass("image");
-			          $("#Board li:last-child").addClass("image").draggable();
-			   //        	{
-						// drag: function(){
-						// 	var offset = $(this).offset();
-						// 	var xPos = offset.left;
-						// 	var yPos = offset.top;
-						// 	$('#posX').text('x: ' + xPos);
-	  		 // 				$('#posY').text('y: ' + yPos);
-						// 	socket.emit('movePhoto',   xPos,yPos);						
-						// }
-						// });		          
-			          $( "<img/>" ).attr( "src",photo.src ).appendTo('.image');		          	
+			socket.on('boardToAll',function (photo){
+			$("#Board li").removeClass("image");
+			$("#Board").append("<li id='"+photo._id+"'><div  class='img-rounded'>"+photo.photoName+"</div></li>");	          
+			$("#"+photo._id).addClass("image");
+			$("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
+			$("#"+photo._id).append("<div>"+ocenaHTML+"</div>");
+			$("#"+photo._id).removeClass("image");
+
+				// $("#Board").append("<li id='"+photo._id+"'>"+photo.photoName+"</li>");
+			 //    $("#Board li:last-child").prev().removeClass("image");
+			 //    $("#Board li:last-child").addClass("image").draggable();		          
+			 //    $( "<img/>" ).attr( "src",photo.src ).appendTo('.image');		          	
 			});
 
-	socket.on('showLoadedBoardPhoto',function (photo){
+	socket.on('showLoadedBoardPhoto',function (photo,count){
 		$.each( photo, function( i, photo ) {						  		
 			$("#Board li").removeClass("image");
 			$("#Board").append("<li id='"+photo._id+"'><div  class='img-rounded'>"+photo.photoName+"</div></li>");	          
 			$("#"+photo._id).addClass("image").draggable();
 			$("<img class='img-polaroid'/>").attr( "src", photo.src ).appendTo('.image');
 			$("#"+photo._id).append("<div>"+ocenaHTML+"</div>");		  							  											
-			          	if ( i === 4) {
+			          	if ( i === count) {
 				          	  return false;
 				          	}   					         	
 	   	 });	
