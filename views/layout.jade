@@ -14,7 +14,7 @@ html
     script(type="text/javascript", src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js")
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(src='/js/bootstrap.min.js')
-    script(src='/js/skrypt.js')    
+    script(src='/js/skrypt.js')   
   body
     .navbar.navbar-inverse.navbar-static-top
       .navbar-inner
@@ -29,6 +29,6 @@ html
             else
               li
                 a(href="/logout") Wyloguj #{user.username}
-      block content
+    block content
      
      

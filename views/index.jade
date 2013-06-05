@@ -4,33 +4,8 @@ block content
  if (user)
     div Witamy w PicDrop!
     div#userName #{user.username}
-    form(action='#')
-      input#szukaj(type='text', name='name', data-provide='typeahead')
-      input#guzik.btn.btn-primary(type='button', value='ok')
-      button#reset.btn.btn-success Usuń historie
-      .btn-toolbar(style='margin: 0;')
-       .btn-group
-        button.btn.btn-success.dropdown-toggle(data-toggle='dropdown')
-          | Ocena
-          span.caret
-        ul.dropdown-menu
-          li
-            #ocena.btn-group(data-toggle='buttons-radio')
-              button.btn.btn-danger 1
-              button.btn.btn-warning 2
-              button.btn.btn-info 3
-              button.btn.btn-success 4
-              button.btn.btn-primary 5
-        button#jakaOcena.btn.btn-success 0
-    div
-      | Twój pokój to:
-      #pokoj Globalny 
-      | Dołącz do innego pokoju:
-     button#dolacz.btn.btn-success Dołącz
-     button#recoverSession.btn.btn-success Przywróć ostatnią sesję
-     a.zoom.btn.btn-success(role='button', data-toggle='modal')
-       i.icon-zoom-in
-    //
+    div Twój pokój to: 
+     div#pokoj Globalny
        Modal 
     #myModal.modal.hide.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
       .modal-header

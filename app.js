@@ -82,11 +82,6 @@ io.sockets.on('connection', function (socket) {
 
 //rooms-----------------------------------
 
- // socket.on('room', function (room) {
- //        //  if(socket.room)
- //        // socket.leave(socket.room);        
- //    }); 
-
 socket.on('saveRoom',function (userName,room){
         var user= new userModel({
              userName: userName,
@@ -144,59 +139,51 @@ socket.on('newPhoto',function (userName,photoNm,src){
     });
 });
 
-socket.on('newOnBoard', function (id,room){      
-        console.log(id); 
-        photoModel.findOneAndUpdate({_id: id},{ $set: { inBoard: true,room: room}}).exec(function (err, photo){
-                 console.log(photo);
-                 socket.join(room);
-            socket.broadcast.to(room).emit('boardToAll',photo);
-        });  
-    });
+    socket.on('newOnBoard', function (id,room){      
+            console.log(id); 
+            photoModel.findOneAndUpdate({_id: id},{ $set: { inBoard: true,room: room}}).exec(function (err, photo){
+                     console.log(photo);
+                     socket.join(room);
+                socket.broadcast.to(room).emit('boardToAll',photo);
+            });  
+     });
 
-socket.on('loadPhoto',function (userName,room){
-    var counted;
-     photoModel.count({ ownerId: userName,inBoard: false,room: room }, function (err, count) {
-        console.log(count);
-        counted=count;
-    });
-    socket.join(room);
-    if(counted!== 0){
-        photoModel.find({ownerId: userName,inBoard: false,room: room}).exec(function (err, photo){           
-               socket.emit('showLoadedPhoto',photo,counted);
+    socket.on('loadPhoto',function (userName,room){
+        var counted;
+         photoModel.count({ ownerId: userName,inBoard: false,room: room }, function (err, count) {
+            console.log(count);
+            counted=count;
         });
-    }
-});
-
-socket.on('loadPhotoBoard',function (room){
-    var counted;
-     photoModel.count({inBoard: true,room: room }, function (err, count) {
-        console.log(count);
-        counted=count;
-    });   
-    if(counted!== 0){
         socket.join(room);
-        photoModel.find({inBoard: true,room: room}).exec(function (err, photo){
-            console.log('wczytuje zdjecia z tablicy w pokoju '+room);
-            io.sockets.in(room).emit('showLoadedBoardPhoto',photo,counted);
-        });
-    }
-});
+        if(counted!== 0){
+            photoModel.find({ownerId: userName,inBoard: false,room: room}).exec(function (err, photo){           
+                   socket.emit('showLoadedPhoto',photo,counted);
+            });
+        }
+    });
 
-socket.on('resetHistory',function (userName){
-    photoModel.remove({ownerId: userName}).exec();
-    console.log('usuwanie zdjec uzytkownika '+userName);
-});
+    socket.on('loadPhotoBoard',function (room){
+        var counted;
+         photoModel.count({inBoard: true,room: room }, function (err, count) {
+            console.log(count);
+            counted=count;
+        });   
+        if(counted!== 0){
+            socket.join(room);
+            photoModel.find({inBoard: true,room: room}).exec(function (err, photo){
+                console.log('wczytuje zdjecia z tablicy w pokoju '+room);
+                io.sockets.in(room).emit('showLoadedBoardPhoto',photo,counted);
+            });
+        }
+    });
 
-
-    // socket.on('disconnect', function() {
-    //   delete photos[socket.id];
-    //   socket.broadcast.emit("disconnectUser", socket.id);
-    //    });
-
+    socket.on('resetHistory',function (userName){
+        photoModel.remove({ownerId: userName}).exec();
+        console.log('usuwanie zdjec uzytkownika '+userName);
+    });
     
-  });
-
-
+});
+//end of socketio-----------------------------------------------
 // Configure passport
 var Account = require('./models/account');
 passport.use(new LocalStrategy(Account.authenticate()));
