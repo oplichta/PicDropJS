@@ -5,8 +5,8 @@ var path = require('path'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     Schema = mongoose.Schema,
-    LocalStrategy = require('passport-local').Strategy,
-    passportLocalMongoose = require('../../lib/passport-local-mongoose.js');
+    LocalStrategy = require('passport-local').Strategy;
+    //passportLocalMongoose = require('../passport-local-mongoose/lib/passport-local-mongoose.js');
 
 var path = require('path');
 var fs    = require('fs');
